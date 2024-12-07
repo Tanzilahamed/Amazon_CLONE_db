@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit User</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      html,
+      body {
+        display: grid;
+        height: 100%;
+        width: 100%;
+        place-items: center;
+        background: #f2f2f2;
+      }
+      .wrapper {
+        width: 380px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.1);
+      }
+      .wrapper .title {
+        font-size: 35px;
+        font-weight: 600;
+        text-align: center;
+        line-height: 100px;
+        color: #fff;
+        user-select: none;
+        border-radius: 15px 15px 0 0;
+        background: linear-gradient(-135deg, #c850c0, #4158d0);
+      }
+      .wrapper form {
+        padding: 30px;
+      }
+      .wrapper form .field {
+        margin-top: 20px;
+        position: relative;
+      }
+      .wrapper form .field label {
+        position: absolute;
+        top: 50%;
+        left: 20px;
+        color: #999999;
+        font-weight: 400;
+        font-size: 17px;
+        pointer-events: none;
+        transform: translateY(-50%);
+        transition: all 0.3s ease;
+        background-color: white; /* To avoid overlap effect */
+        padding: 0 5px; /* Adds padding for better visibility */
+      }
+
+      form .field input:focus ~ label,
+      form .field input:valid ~ label {
+        top: -10px;
+        font-size: 14px;
+        color: #4158d0;
+        transform: translateY(0%);
+      }
+
+      .wrapper form .field input {
+        width: 100%;
+        height: 50px;
+        padding-left: 20px;
+        font-size: 17px;
+        outline: none;
+        border: 1px solid lightgrey;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+      }
+      .wrapper form .field input:focus {
+        border-color: #4158d0;
+      }
+      .wrapper form .field label {
+        position: absolute;
+        top: 50%;
+        left: 20px;
+        color: #999999;
+        font-size: 17px;
+        pointer-events: none;
+        transform: translateY(-50%);
+        transition: all 0.3s ease;
+      }
+      .wrapper form .field input:focus ~ label {
+        top: 0%;
+        font-size: 16px;
+        color: #4158d0;
+        background: #fff;
+        transform: translateY(-50%);
+      }
+      .wrapper form button {
+        width: 100%;
+        height: 50px;
+        margin-top: 20px;
+        font-size: 20px;
+        font-weight: 500;
+        border: none;
+        border-radius: 25px;
+        color: #fff;
+        background: linear-gradient(-135deg, #c850c0, #4158d0);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .wrapper form button:active {
+        transform: scale(0.95);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="title">Edit User</div>
+      <form id="edit-user-form">
+        <div class="field">
+          <input type="email" id="email" name="email" required />
+          <label>Email</label>
+        </div>
+        <div class="field">
+          <input type="password" id="password" name="password" required />
+          <label>Password</label>
+        </div>
+        <button type="submit">Update User</button>
+      </form>
+    </div>
+    <script>
+      // Fetch user data based on user ID and fill the form
+      const userId = window.location.pathname.split("/").pop(); // Get the user ID from the URL
+      console.log("User ID: ", userId);
+      fetch(`/api/registered-users/${userId}`)
+        .then((response) => response.json())
+        .then((user) => {
+          document.getElementById("email").value = user.email;
+          document.getElementById("password").value = user.password;
+        })
+        .catch((err) => console.error("Error fetching user data:", err));
+
+      // Handle form submission to update user data
+      document
+        .getElementById("edit-user-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          fetch(`/api/update-user/${userId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              alert("User updated successfully!");
+              window.location.href = "/"; // Redirect to login page after update
+            })
+            .catch((err) => console.error("Error updating user:", err));
+        });
+    </script>
+  </body>
+</html>
